@@ -41,6 +41,29 @@ export interface ViewDeps {
   images: ImageLoader;
 }
 
+/* ── the 480x320 Totem panel: page, never scroll ─────────────────────────── */
+const PANEL = typeof window !== 'undefined' && window.matchMedia('(max-height: 400px)').matches;
+const PANEL_CARDS = 2;
+let panelListPage = 0;
+let panelDetailPage = 0;
+let panelDetailFor = '';
+
+function panelPager(
+  page: number,
+  pages: number,
+  go: (next: number) => void,
+): HTMLElement {
+  const back = button('‹', 'pager-step', () => go(Math.max(0, page - 1)));
+  (back as HTMLButtonElement).disabled = page === 0;
+  const forward = button('›', 'pager-step', () => go(Math.min(pages - 1, page + 1)));
+  (forward as HTMLButtonElement).disabled = page >= pages - 1;
+  return el('nav', { class: 'panel-pager' }, [
+    back,
+    el('span', { class: 'pager-count', text: `${page + 1} / ${pages}` }),
+    forward,
+  ]);
+}
+
 /** Model for the primary (list) pane. */
 export interface ListModel {
   heading: string;
@@ -366,7 +389,12 @@ export function renderList(host: HTMLElement, model: ListModel, deps: ViewDeps):
     body.append(notice('No listings match', model.emptyMessage));
   } else {
     const grid = el('div', { class: 'grid' });
-    for (const product of model.products) {
+    const pages = PANEL ? Math.max(1, Math.ceil(model.products.length / PANEL_CARDS)) : 1;
+    if (PANEL) panelListPage = Math.min(panelListPage, pages - 1);
+    const shown = PANEL
+      ? model.products.slice(panelListPage * PANEL_CARDS, panelListPage * PANEL_CARDS + PANEL_CARDS)
+      : model.products;
+    for (const product of shown) {
       grid.append(
         productCard(
           product,
@@ -378,7 +406,15 @@ export function renderList(host: HTMLElement, model: ListModel, deps: ViewDeps):
       );
     }
     body.append(grid);
-    if (model.canLoadMore) {
+    if (PANEL && pages > 1) {
+      body.append(
+        panelPager(panelListPage, pages, (next) => {
+          panelListPage = next;
+          renderList(host, model, deps);
+        }),
+      );
+    }
+    if (model.canLoadMore && (!PANEL || panelListPage >= pages - 1)) {
       body.append(
         button(model.busy ? 'Loading…' : 'Load more', 'secondary-button load-more', () =>
           deps.actions.loadMore(),
@@ -690,7 +726,30 @@ export function renderDetail(host: HTMLElement, model: DetailModel, deps: ViewDe
     el('p', { class: 'detail-meta', text: `Published ${date.toLocaleDateString()}` }),
   );
 
-  replace(host, ...sections);
+  if (!PANEL) {
+    replace(host, ...sections);
+    return;
+  }
+
+  // The panel walks the listing one screen at a time: back + hero first,
+  // then each remaining section behind the pager. Nothing scrolls.
+  if (panelDetailFor !== product.address) {
+    panelDetailFor = product.address;
+    panelDetailPage = 0;
+  }
+  const hero: (Node | string)[] = sections.slice(0, 4); // back, carousel, title, price
+  const rest = sections.slice(4);
+  const screens: (Node | string)[][] = [hero, ...rest.map((section) => [back, section])];
+  panelDetailPage = Math.min(panelDetailPage, screens.length - 1);
+  const screen = el('div', { class: 'detail-screen' });
+  for (const node of screens[panelDetailPage]) screen.append(node);
+  const walk = screens.length > 1
+    ? [panelPager(panelDetailPage, screens.length, (next) => {
+        panelDetailPage = next;
+        renderDetail(host, model, deps);
+      })]
+    : [];
+  replace(host, screen, ...walk);
 }
 
 /** Render the about pane, including which optional domains this load has. */

@@ -72,7 +72,7 @@ body {
 }
 
 .tab {
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 0.7rem;
   border: 1px solid transparent;
   border-radius: 8px;
@@ -156,7 +156,7 @@ body {
   display: flex;
   align-items: stretch;
   gap: 0.35rem;
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 0.5rem;
   border: 1px solid var(--pm-border);
   border-radius: 8px;
@@ -181,7 +181,7 @@ body {
 }
 
 .sort-select {
-  min-height: 40px;
+  min-height: 44px;
   border: 1px solid var(--pm-border);
   border-radius: 8px;
   background: var(--pm-surface);
@@ -192,7 +192,7 @@ body {
 
 .icon-button {
   min-width: 40px;
-  min-height: 40px;
+  min-height: 44px;
   border: 1px solid var(--pm-border);
   border-radius: 8px;
   background: var(--pm-surface);
@@ -215,7 +215,7 @@ body {
 }
 
 .chip {
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 0.65rem;
   border: 1px solid var(--pm-border);
   border-radius: 999px;
@@ -350,7 +350,7 @@ body {
 
 .primary-button,
 .secondary-button {
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 0.9rem;
   border-radius: 8px;
   font: inherit;
@@ -558,7 +558,7 @@ body {
 
 .url-field {
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 0.5rem;
   border: 1px solid var(--pm-border);
   border-radius: 8px;
@@ -819,4 +819,36 @@ body {
   .carousel-item {
     width: min(100%, 180px);
   }
+}
+
+
+/* ── the 480x320 Totem panel ─────────────────────────────────────────────
+   One screen at a time: the list pages two cards, the detail walks its
+   sections, and nothing scrolls. Pager state lives in views.ts. */
+@media (max-height: 400px) {
+  .pane { overflow: hidden; }
+  .pane-hint, .pane-sub { display: none; }
+  .card-summary { display: none; }
+  .thumb { height: 84px; min-height: 0; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  .carousel { overflow: hidden; }
+  .md-code { overflow: hidden; }
+  .filter-panel { display: none; }
+
+  .panel-pager {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 64px 6px 0;
+  }
+  .panel-pager .pager-step {
+    width: 64px; min-height: 44px; font-size: 18px;
+    border: 1px solid var(--pm-border); border-radius: 8px;
+    background: var(--pm-surface); color: inherit; cursor: pointer;
+  }
+  .panel-pager .pager-step:disabled { opacity: 0.35; }
+  .panel-pager .pager-count {
+    flex: 1; text-align: center; color: var(--pm-muted);
+    font-size: 11px; letter-spacing: 0.1em;
+  }
+  .detail-screen { overflow: hidden; min-height: 0; flex: 1 1 auto; }
+  .detail-description { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6; overflow: hidden; }
 }
