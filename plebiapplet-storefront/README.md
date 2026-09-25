@@ -88,15 +88,22 @@ a reference shell and fails on boot errors, malformed envelopes, forbidden
 browser-authority references, or a crash when no NAP domains are injected.
 
 The three `manifest/*` checks report `SKIP` because `@napplet/conformance-cli`
-0.2.15 never resolves a manifest event in directory mode. To inspect the manifest
-directly, build with a key and read the sidecar:
+0.2.19 never resolves a manifest event in directory mode. To inspect the manifest
+directly, read the sidecar every build writes (`VITE_DEV_PRIVKEY_HEX=<32-byte hex>`
+additionally signs it):
 
 ```bash
-VITE_DEV_PRIVKEY_HEX=<32-byte hex> pnpm build && cat dist/.nip5a-manifest.json
+pnpm build && cat dist/.nip5a-manifest.json
 ```
 
 That should show kind `35129`, `["d","plebeian-storefront"]`, a `path` tag for
 `/index.html`, an aggregate `x` tag, and exactly one `requires` tag: `outbox`.
+The artifact itself carries the same declaration as
+`<meta name="napplet-type" content="plebeian-storefront">` and
+`<meta name="napplet-requires" content="outbox">`, stamped by `vite.config.ts`
+from the same constants. Every other domain (`resource`, `link`, `storage`,
+`common`, `count`, `theme`) stays optional with the fallback listed in the About
+pane, so it is not in the requires list. The napplet uses no custom host channels.
 
 ## Deploy
 

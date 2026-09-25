@@ -9,15 +9,15 @@ importers:
   .:
     dependencies:
       '@napplet/sdk':
-        specifier: ^0.24.4
-        version: 0.24.4
+        specifier: ^0.28.0
+        version: 0.28.0
     devDependencies:
       '@napplet/conformance-cli':
-        specifier: ^0.2.15
-        version: 0.2.15
+        specifier: ^0.2.19
+        version: 0.2.19
       '@napplet/vite-plugin':
-        specifier: ^0.11.3
-        version: 0.11.3(typescript@5.9.3)(vite@6.4.3)
+        specifier: ^0.14.1
+        version: 0.14.1(typescript@5.9.3)(vite@6.4.3)
       playwright:
         specifier: ^1.59.1
         version: 1.61.0
@@ -189,29 +189,29 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@napplet/conformance-cli@0.2.15':
-    resolution: {integrity: sha512-iQnvXKnrONFsVfXLqv1P6XnPQz8nMM17caPH+ddQ0smmXHGnKV9HBX2fw3INGzDyruHGaXcVNsATYZWZTSuvCQ==}
+  '@napplet/conformance-cli@0.2.19':
+    resolution: {integrity: sha512-3OYnYca8Xy5OQ6wnF+kdPv98Ece8XgG7P94dv+WmvtU/wHDhvZs7AQi2OpS9/FJIzPeYeU3Sii8YnqIemwDC3g==}
     hasBin: true
 
-  '@napplet/conformance@0.13.0':
-    resolution: {integrity: sha512-3e6ifbv6jc6LatAnFQjfqmfJbPtTRq96uo/QQUF4xOIsuoX0kShTj+RBdjq4JJJMl6MvQRoQX6t+oAcMuzuWng==}
+  '@napplet/conformance@0.17.0':
+    resolution: {integrity: sha512-EycR0WoSGrMURYeH8frahrAgEU6AGIORXgJK+3jiPHwlVUDs9dlyKLgEVoH6vRlBkr0ptAZGtH4iV/NSNFCPfQ==}
 
-  '@napplet/core@0.28.0':
-    resolution: {integrity: sha512-iJ0vX6YYFCcgEm4cyR5s9MUtY01j79fnQZ8mNB+cgjwYBOZwUdt/FNNAfAzGsepNtMBORzhXUdo0/CKebBa+hg==}
+  '@napplet/core@0.32.0':
+    resolution: {integrity: sha512-gP+U7xd32gD7uFYINK+NWDJfW2TMvhLcIPr+Boafta7tZWTRIlyzozvqsooyFg7XUapCOnGKqnjIUa0DFo6Brw==}
 
-  '@napplet/nap@0.28.0':
-    resolution: {integrity: sha512-1L3oDk0BDuag3RdN7E0u3BQKfl0KmX33omSE3VZsGJD2/JJr9lzx1MsZLdjFB9coxOZyX9M3QaHumTHoXdj6Dg==}
+  '@napplet/nap@0.32.0':
+    resolution: {integrity: sha512-DvlneleMpcUtOZmLGRGj9QSCor67veL4gWOYGTWaXPDkBEaEuiU4Ijtreb3+kVky/4ghjL3qmScOFMW6WorWQw==}
     peerDependencies:
       json-schema-to-ts: ^3.1.1
     peerDependenciesMeta:
       json-schema-to-ts:
         optional: true
 
-  '@napplet/sdk@0.24.4':
-    resolution: {integrity: sha512-g/0Gtvxl6fiTwE1MGZXqv9ztEnzVkJvriZvUKt9IKfIOso5L4dPRpWb/6sczcTNsHdatKjfLk0lQ6KPS8ezjWQ==}
+  '@napplet/sdk@0.28.0':
+    resolution: {integrity: sha512-4khbR2mhqJMWLmQIZM++XVJ1vRYrACkktt3nOnblQP28AGOpDPrI8PiYhv5QVYXzU0fKYZqjaA/rISEvSLYyJw==}
 
-  '@napplet/vite-plugin@0.11.3':
-    resolution: {integrity: sha512-4k4xlzYVJHY2dSw5wrR9VxqAj/VL3QAzIfBZUgZI073gDDJac63WUkzj8xeGXB9QRqsqZBCemXGLZB0q+vyV6Q==}
+  '@napplet/vite-plugin@0.14.1':
+    resolution: {integrity: sha512-WIs5CP9+lWOOuuItlO39tjvlWxuFJmb1xLyXcuM6BlV9LTmbO2bAkU1mXcz9G0mPSRQnxzTRf4RckP9J0O6Yug==}
     peerDependencies:
       vite: '>=5.0.0'
 
@@ -597,34 +597,34 @@ snapshots:
   '@esbuild/win32-x64@0.25.12':
     optional: true
 
-  '@napplet/conformance-cli@0.2.15':
+  '@napplet/conformance-cli@0.2.19':
     dependencies:
-      '@napplet/conformance': 0.13.0
+      '@napplet/conformance': 0.17.0
       playwright: 1.61.0
     transitivePeerDependencies:
       - json-schema-to-ts
 
-  '@napplet/conformance@0.13.0':
+  '@napplet/conformance@0.17.0':
     dependencies:
-      '@napplet/core': 0.28.0
-      '@napplet/nap': 0.28.0
+      '@napplet/core': 0.32.0
+      '@napplet/nap': 0.32.0
     transitivePeerDependencies:
       - json-schema-to-ts
 
-  '@napplet/core@0.28.0': {}
+  '@napplet/core@0.32.0': {}
 
-  '@napplet/nap@0.28.0':
+  '@napplet/nap@0.32.0':
     dependencies:
-      '@napplet/core': 0.28.0
+      '@napplet/core': 0.32.0
 
-  '@napplet/sdk@0.24.4':
+  '@napplet/sdk@0.28.0':
     dependencies:
-      '@napplet/core': 0.28.0
-      '@napplet/nap': 0.28.0
+      '@napplet/core': 0.32.0
+      '@napplet/nap': 0.32.0
     transitivePeerDependencies:
       - json-schema-to-ts
 
-  '@napplet/vite-plugin@0.11.3(typescript@5.9.3)(vite@6.4.3)':
+  '@napplet/vite-plugin@0.14.1(typescript@5.9.3)(vite@6.4.3)':
     dependencies:
       nostr-tools: 2.23.5(typescript@5.9.3)
       vite: 6.4.3
