@@ -88,15 +88,29 @@ a reference shell and fails on boot errors, malformed envelopes, forbidden
 browser-authority references, or a crash when no NAP domains are injected.
 
 The three `manifest/*` checks report `SKIP` because `@napplet/conformance-cli`
-0.2.15 never resolves a manifest event in directory mode. To inspect the manifest
-directly, build with a key and read the sidecar:
+0.2.19 never resolves a manifest event in directory mode. To inspect the manifest
+directly, read the sidecar every build writes (`VITE_DEV_PRIVKEY_HEX=<32-byte hex>`
+additionally signs it):
 
 ```bash
-VITE_DEV_PRIVKEY_HEX=<32-byte hex> pnpm build && cat dist/.nip5a-manifest.json
+pnpm build && cat dist/.nip5a-manifest.json
 ```
 
 That should show kind `35129`, `["d","plebeian-storefront"]`, a `path` tag for
-`/index.html`, an aggregate `x` tag, and exactly one `requires` tag: `outbox`.
+`/index.html`, an aggregate `x` tag, and one `requires` tag per domain the
+napplet asks the shell for: `outbox`, `resource`, `link`, `storage`, `common`,
+`count`, `theme`. The artifact itself carries the same declaration as
+`<meta name="napplet-type" content="plebeian-storefront">` and
+`<meta name="napplet-requires" content="outbox,resource,link,storage,common,count,theme">`,
+stamped by `vite.config.ts` from the same constants.
+
+A shell grants a napplet only the domains it declares, so the list names every
+domain the code asks for, not only the hard requirement. At runtime `outbox` is
+still the only domain the napplet cannot do without; each of the others keeps
+the fallback listed under "NAP boundaries" and in the About pane, so the napplet
+degrades when a shell refuses one. `identity` is not declared: the About pane
+only reports whether it is present, the napplet never calls it. The napplet uses
+no custom host channels.
 
 ## Deploy
 

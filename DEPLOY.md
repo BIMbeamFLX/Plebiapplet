@@ -69,11 +69,14 @@ not deploy. A non-conformant artifact will load into shells and fail there inste
 Expected shape of a good build:
 
 ```bash
-ls -la dist/          # exactly one file: index.html, ~53 kB
+ls -la dist/          # exactly two files: index.html (~55 kB) and .nip5a-manifest.json
 ```
 
-If `dist/` contains anything besides `index.html`, the single-file artifact rule is
-broken and the manifest will be wrong. Rebuild; do not hand-edit `dist/`.
+`index.html` is the single-file artifact; `.nip5a-manifest.json` is the unsigned
+manifest sidecar that `@napplet/vite-plugin` 0.14 writes on every build (see
+`plebiapplet-storefront/docs/package-surfaces.md`). Anything else in `dist/` means the
+single-file artifact rule is broken and the manifest will be wrong. Rebuild; do not
+hand-edit `dist/`.
 
 ---
 
@@ -261,7 +264,7 @@ forces the keychain provider off if it is misbehaving.
 | `bunker:// signing is not implemented yet` | using a bunker URL | mint an `nbunksec` via `keys connect` |
 | Deploy uploads nothing / publishes nowhere | empty `relays` / `blossomServers` | §6 — they have no defaults |
 | `RESULT: NON-CONFORMANT` | bad build | fix the napplet, do not deploy around it |
-| `dist/` has more than `index.html` | single-file build broke | `rm -rf dist && pnpm build` |
+| `dist/` has more than `index.html` and `.nip5a-manifest.json` | single-file build broke | `rm -rf dist && pnpm build` |
 
 ---
 
@@ -270,9 +273,11 @@ forces the keychain provider off if it is misbehaving.
 Being straight about provenance so you do not debug my guesses:
 
 **Verified by running it** (on the Windows dev box, same repo): §2 clone and
-install, §3 build + conformance (`CONFORMANT`, 5 passed / 0 failed, single 53.25 kB
-`dist/index.html`), and the manifest sidecar shape (kind 35129, d-tag
-`plebeian-storefront`, one hashed `/index.html` path tag, `requires: outbox`).
+install, §3 build + conformance (`CONFORMANT`, 5 passed / 0 failed, a single
+`dist/index.html` of about 55 kB), and the manifest sidecar shape (kind 35129,
+d-tag `plebeian-storefront`, one hashed `/index.html` path tag, one `requires`
+tag per domain the napplet asks the shell for: `outbox`, `resource`, `link`,
+`storage`, `common`, `count`, `theme`).
 
 **Read from the CLI source, not executed** — §4 through §8. Deno is not installed
 on the machine this was written from, so the flags, the keychain behaviour, the

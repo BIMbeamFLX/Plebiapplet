@@ -46,8 +46,12 @@ Vite plugin for local development metadata and local manifest/hash workflow.
 import { nip5aManifest } from '@napplet/vite-plugin';
 ```
 
-The plugin injects napplet meta tags, folds config schema and connect origins
-into aggregate hash inputs, and can write a local `.nip5a-manifest.json` when
-`VITE_DEV_PRIVKEY_HEX` is set.
+With `@napplet/vite-plugin` 0.14 the plugin sets the page title and description
+from its options, folds the config schema into the manifest, hashes every file
+in `dist/` into the `path` and aggregate `x` tags, and writes
+`dist/.nip5a-manifest.json` on every build (unsigned; `VITE_DEV_PRIVKEY_HEX`
+additionally signs it). It no longer injects the `napplet-type` and
+`napplet-requires` meta tags: the repo's own `transformIndexHtml` helper in
+`vite.config.ts` stamps them from the same constants it hands `nip5aManifest`.
 
 Production relay publishing is intentionally outside this boilerplate.
