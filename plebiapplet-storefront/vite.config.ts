@@ -6,10 +6,12 @@ import { nip5aManifest } from '@napplet/vite-plugin';
 // takes precedence at deploy time.
 const NAPPLET_TYPE = 'plebeian-storefront';
 
-// OUTBOX is the only hard requirement (SPEC 5). Every other domain the
-// napplet touches is optional and has a rendered fallback, so declaring it
-// here would refuse loads the napplet can serve perfectly well.
-const REQUIRES = ['outbox'];
+// Every domain the napplet asks the shell for, optional ones included. A
+// shell grants a napplet only the domains it declares (the Hangar: granted =
+// declared AND served), so a domain missing here is never offered. At runtime
+// OUTBOX is still the only hard requirement (SPEC 5): each other domain keeps
+// its rendered fallback and the napplet degrades when a shell refuses it.
+const REQUIRES = ['outbox', 'resource', 'link', 'storage', 'common', 'count', 'theme'];
 
 /**
  * Stamp `napplet-type` and `napplet-requires` into the built `<head>`.

@@ -97,13 +97,20 @@ pnpm build && cat dist/.nip5a-manifest.json
 ```
 
 That should show kind `35129`, `["d","plebeian-storefront"]`, a `path` tag for
-`/index.html`, an aggregate `x` tag, and exactly one `requires` tag: `outbox`.
-The artifact itself carries the same declaration as
+`/index.html`, an aggregate `x` tag, and one `requires` tag per domain the
+napplet asks the shell for: `outbox`, `resource`, `link`, `storage`, `common`,
+`count`, `theme`. The artifact itself carries the same declaration as
 `<meta name="napplet-type" content="plebeian-storefront">` and
-`<meta name="napplet-requires" content="outbox">`, stamped by `vite.config.ts`
-from the same constants. Every other domain (`resource`, `link`, `storage`,
-`common`, `count`, `theme`) stays optional with the fallback listed in the About
-pane, so it is not in the requires list. The napplet uses no custom host channels.
+`<meta name="napplet-requires" content="outbox,resource,link,storage,common,count,theme">`,
+stamped by `vite.config.ts` from the same constants.
+
+A shell grants a napplet only the domains it declares, so the list names every
+domain the code asks for, not only the hard requirement. At runtime `outbox` is
+still the only domain the napplet cannot do without; each of the others keeps
+the fallback listed under "NAP boundaries" and in the About pane, so the napplet
+degrades when a shell refuses one. `identity` is not declared: the About pane
+only reports whether it is present, the napplet never calls it. The napplet uses
+no custom host channels.
 
 ## Deploy
 
