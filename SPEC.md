@@ -56,7 +56,8 @@ known protocol/package gaps: no wallet/zap NAP; dm NAP not designed for kind-16/
 nappletType: plebeian-storefront
 purpose: watch-only storefront for Plebeian Market (NIP-99/gamma kind-30402 listings)
 NAPs used: outbox (req), storage (opt), resource (opt), common (opt), count (opt),
-           link (opt), theme (opt), identity (opt)
+           link (opt), theme (opt); identity is only shown in the About pane,
+           never asked for, so it is not in requires
 requires: ['outbox', 'resource', 'link', 'storage', 'common', 'count', 'theme']
                                   # every domain the code asks the shell for;
                                   # outbox is the only hard requirement at runtime

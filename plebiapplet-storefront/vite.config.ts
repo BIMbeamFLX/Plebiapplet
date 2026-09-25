@@ -16,7 +16,8 @@ const REQUIRES = ['outbox', 'resource', 'link', 'storage', 'common', 'count', 't
 /**
  * Stamp `napplet-type` and `napplet-requires` into the built `<head>`.
  * `@napplet/vite-plugin` 0.14 writes them only to the manifest sidecar, but
- * shells and the Hangar's `check:napplets` read them from the artifact itself.
+ * the Hangar's `check:napplets`, its napplet board and its publish form read
+ * them from the artifact itself.
  */
 function nappletMeta(): Plugin {
   return {

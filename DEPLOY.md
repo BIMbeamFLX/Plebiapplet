@@ -69,11 +69,14 @@ not deploy. A non-conformant artifact will load into shells and fail there inste
 Expected shape of a good build:
 
 ```bash
-ls -la dist/          # exactly one file: index.html, ~55 kB
+ls -la dist/          # exactly two files: index.html (~55 kB) and .nip5a-manifest.json
 ```
 
-If `dist/` contains anything besides `index.html`, the single-file artifact rule is
-broken and the manifest will be wrong. Rebuild; do not hand-edit `dist/`.
+`index.html` is the single-file artifact; `.nip5a-manifest.json` is the unsigned
+manifest sidecar that `@napplet/vite-plugin` 0.14 writes on every build (see
+`plebiapplet-storefront/docs/package-surfaces.md`). Anything else in `dist/` means the
+single-file artifact rule is broken and the manifest will be wrong. Rebuild; do not
+hand-edit `dist/`.
 
 ---
 
@@ -261,7 +264,7 @@ forces the keychain provider off if it is misbehaving.
 | `bunker:// signing is not implemented yet` | using a bunker URL | mint an `nbunksec` via `keys connect` |
 | Deploy uploads nothing / publishes nowhere | empty `relays` / `blossomServers` | §6 — they have no defaults |
 | `RESULT: NON-CONFORMANT` | bad build | fix the napplet, do not deploy around it |
-| `dist/` has more than `index.html` | single-file build broke | `rm -rf dist && pnpm build` |
+| `dist/` has more than `index.html` and `.nip5a-manifest.json` | single-file build broke | `rm -rf dist && pnpm build` |
 
 ---
 
