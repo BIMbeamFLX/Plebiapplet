@@ -1,0 +1,854 @@
+/*
+ * Storefront presentation (SPEC 8, 9).
+ *
+ * Layout is container-driven: `#app` is the query container, so the tiny /
+ * medium / large states depend on the space the shell actually gives the iframe,
+ * never on the viewport. Colours come from the `--pm-*` custom properties that
+ * theme.ts writes; the values below are the bundled dark fallback.
+ */
+
+:root {
+  --pm-bg: #111418;
+  --pm-fg: #e8eaed;
+  --pm-primary: #f7931a;
+  --pm-surface: rgb(27, 31, 36);
+  --pm-border: rgb(47, 52, 58);
+  --pm-muted: rgb(137, 143, 150);
+  color-scheme: dark light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--pm-bg);
+  color: var(--pm-fg);
+}
+
+body {
+  font: 15px/1.45 system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, sans-serif;
+  overflow: hidden;
+}
+
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--pm-bg);
+  overflow: hidden;
+  container-type: size;
+  container-name: app;
+}
+
+/* ── chrome ─────────────────────────────────────────────────────────────── */
+
+.topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.7rem;
+  border-bottom: 1px solid var(--pm-border);
+  min-width: 0;
+}
+
+.brand {
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  color: var(--pm-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.tab {
+  min-height: 44px;
+  padding: 0 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--pm-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.tab[data-on='true'] {
+  color: var(--pm-fg);
+  border-color: var(--pm-border);
+  background: var(--pm-surface);
+}
+
+.panes {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.pane {
+  min-width: 0;
+  padding: 0.75rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-wrap: anywhere;
+}
+
+.pane-secondary {
+  border-left: 1px solid var(--pm-border);
+}
+
+.app[data-detail='closed'] .pane-secondary {
+  display: none;
+}
+
+.app[data-detail='open'] .pane-primary {
+  display: none;
+}
+
+/* ── toolbar ────────────────────────────────────────────────────────────── */
+
+.pane-header {
+  margin-bottom: 0.5rem;
+}
+
+.pane-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.pane-sub,
+.pane-hint {
+  margin: 0.15rem 0 0;
+  color: var(--pm-muted);
+  font-size: 0.85rem;
+}
+
+.toolbar {
+  position: sticky;
+  top: -0.75rem;
+  z-index: 2;
+  padding: 0.4rem 0;
+  margin-bottom: 0.6rem;
+  background: var(--pm-bg);
+  border-bottom: 1px solid var(--pm-border);
+}
+
+.search-row {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.search-field {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 0.35rem;
+  min-height: 44px;
+  padding: 0 0.5rem;
+  border: 1px solid var(--pm-border);
+  border-radius: 8px;
+  background: var(--pm-surface);
+  cursor: text;
+}
+
+.search-icon {
+  flex: 0 0 auto;
+  align-self: center;
+  opacity: 0.75;
+}
+
+.search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+
+.sort-select {
+  min-height: 44px;
+  border: 1px solid var(--pm-border);
+  border-radius: 8px;
+  background: var(--pm-surface);
+  color: inherit;
+  font: inherit;
+  padding: 0 0.4rem;
+}
+
+.icon-button {
+  min-width: 40px;
+  min-height: 44px;
+  border: 1px solid var(--pm-border);
+  border-radius: 8px;
+  background: var(--pm-surface);
+  color: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.filter-panel {
+  display: grid;
+  gap: 0.4rem;
+  padding-top: 0.5rem;
+}
+
+.chip-row,
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.chip {
+  min-height: 44px;
+  padding: 0 0.65rem;
+  border: 1px solid var(--pm-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--pm-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.chip[data-on='true'] {
+  color: var(--pm-bg);
+  background: var(--pm-primary);
+  border-color: var(--pm-primary);
+}
+
+/* ── listing grid ───────────────────────────────────────────────────────── */
+
+.grid {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.card {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-width: 0;
+  border: 1px solid var(--pm-border);
+  border-radius: 10px;
+  background: var(--pm-surface);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.card[data-active='true'] {
+  border-color: var(--pm-primary);
+}
+
+.card[data-sold='true'] {
+  opacity: 0.62;
+}
+
+.card-body {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.5rem 0.6rem 0.6rem;
+  min-width: 0;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.card-price {
+  margin: 0;
+  font-weight: 650;
+  color: var(--pm-primary);
+}
+
+.card-summary {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--pm-muted);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.favorite {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  background: var(--pm-bg);
+}
+
+.thumb {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  background: var(--pm-bg);
+  overflow: hidden;
+}
+
+.thumb-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.thumb-placeholder {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--pm-muted);
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.badge {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--pm-border);
+  color: var(--pm-muted);
+}
+
+.badge[data-kind='sold'],
+.badge[data-kind='preorder'] {
+  color: var(--pm-primary);
+  border-color: var(--pm-primary);
+}
+
+.badge[data-kind='lightning'] {
+  color: var(--pm-primary);
+}
+
+/* ── shared controls ────────────────────────────────────────────────────── */
+
+.primary-button,
+.secondary-button {
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.primary-button {
+  border: 1px solid var(--pm-primary);
+  background: var(--pm-primary);
+  color: var(--pm-bg);
+  font-weight: 600;
+}
+
+.secondary-button {
+  border: 1px solid var(--pm-border);
+  background: var(--pm-surface);
+  color: inherit;
+}
+
+.load-more {
+  margin: 0.8rem auto 0;
+  display: block;
+}
+
+.link-button,
+.md-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--pm-primary);
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.notice {
+  border: 1px solid var(--pm-border);
+  border-radius: 10px;
+  padding: 1rem;
+  background: var(--pm-surface);
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+}
+
+.notice-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.notice-body,
+.muted-line {
+  margin: 0;
+  color: var(--pm-muted);
+  font-size: 0.88rem;
+}
+
+.skeleton {
+  cursor: default;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.skeleton-line {
+  height: 0.7rem;
+  border-radius: 4px;
+  background: var(--pm-border);
+}
+
+.skeleton-line.short {
+  width: 55%;
+}
+
+.detail-skeleton {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* ── detail pane ────────────────────────────────────────────────────────── */
+
+.back {
+  margin-bottom: 0.6rem;
+}
+
+.carousel {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 0.3rem;
+}
+
+.carousel-item {
+  flex: 0 0 auto;
+  width: min(100%, 260px);
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--pm-border);
+  border-radius: 10px;
+  background: var(--pm-surface);
+  overflow: hidden;
+  scroll-snap-align: start;
+}
+
+.detail-title {
+  margin: 0.7rem 0 0.2rem;
+  font-size: 1.2rem;
+}
+
+.detail-price-row {
+  display: grid;
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+}
+
+.detail-price {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--pm-primary);
+}
+
+.detail-stock,
+.detail-meta {
+  margin: 0;
+  color: var(--pm-muted);
+  font-size: 0.82rem;
+}
+
+.merchant-row,
+.merchant-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--pm-border);
+  border-bottom: 1px solid var(--pm-border);
+  flex-wrap: wrap;
+}
+
+.merchant-header {
+  border-top: 0;
+}
+
+.avatar {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--pm-surface);
+}
+
+.avatar.small {
+  width: 36px;
+  height: 36px;
+}
+
+.merchant-identity,
+.merchant-meta {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.merchant-name {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.merchant-npub,
+.merchant-sub,
+.merchant-about {
+  margin: 0;
+  color: var(--pm-muted);
+  font-size: 0.8rem;
+}
+
+.checkout {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: start;
+  margin: 0.7rem 0;
+}
+
+.checkout-hint {
+  margin: 0;
+  color: var(--pm-muted);
+  font-size: 0.85rem;
+}
+
+.url-field {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 0.5rem;
+  border: 1px solid var(--pm-border);
+  border-radius: 8px;
+  background: var(--pm-surface);
+  color: inherit;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.detail-actions {
+  margin-bottom: 0.5rem;
+}
+
+.detail-summary {
+  margin: 0.4rem 0;
+}
+
+.detail-section {
+  margin-top: 0.9rem;
+}
+
+.section-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+}
+
+.spec-table {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: 0.2rem 0.7rem;
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.spec-table dt,
+.domain-list dt {
+  color: var(--pm-muted);
+}
+
+.spec-table dd,
+.domain-list dd {
+  margin: 0;
+}
+
+.domain-list {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: 0.25rem 0.7rem;
+  font-size: 0.88rem;
+}
+
+.domain-list dd[data-state='off'] {
+  color: var(--pm-muted);
+}
+
+.shipping-list,
+.review-list,
+.variation-list,
+.collection-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+}
+
+.shipping-list li,
+.review-list li {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--pm-border);
+  border-radius: 8px;
+}
+
+.shipping-title,
+.review-score {
+  font-weight: 600;
+}
+
+.shipping-detail,
+.shipping-countries,
+.review-categories {
+  color: var(--pm-muted);
+  font-size: 0.8rem;
+}
+
+.review-summary {
+  margin: 0 0 0.4rem;
+  font-weight: 600;
+}
+
+.review-text {
+  margin: 0;
+}
+
+/* ── markdown ───────────────────────────────────────────────────────────── */
+
+.detail-description {
+  font-size: 0.92rem;
+}
+
+.md-p,
+.md-h,
+.md-list,
+.md-quote {
+  margin: 0.5rem 0;
+}
+
+.md-list {
+  padding-left: 1.15rem;
+}
+
+.md-quote {
+  padding-left: 0.6rem;
+  border-left: 2px solid var(--pm-border);
+  color: var(--pm-muted);
+}
+
+.md-code {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: var(--pm-surface);
+  overflow-x: auto;
+}
+
+.md-hr {
+  border: 0;
+  border-top: 1px solid var(--pm-border);
+}
+
+.md-image {
+  display: block;
+  max-width: 100%;
+  margin: 0.5rem 0;
+}
+
+.md-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* ── toast ──────────────────────────────────────────────────────────────── */
+
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 0.75rem;
+  transform: translateX(-50%);
+  max-width: min(92%, 420px);
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--pm-border);
+  border-radius: 8px;
+  background: var(--pm-surface);
+  color: var(--pm-fg);
+  font-size: 0.85rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+.toast[data-visible='false'] {
+  display: none;
+}
+
+/* ── large state: master/detail split and a wider grid ──────────────────── */
+
+@container app (min-width: 960px) {
+  .app[data-detail='open'] .panes {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 420px);
+  }
+
+  .app[data-detail='open'] .pane-primary {
+    display: block;
+  }
+
+  .back {
+    display: none;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+/* ── tiny state: compact single-column list, collapsed search ───────────── */
+
+@container app ((max-width: 360px) or (max-height: 300px)) {
+  .pane {
+    padding: 0.5rem;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+
+  .card {
+    grid-template-rows: none;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding-right: 0.35rem;
+  }
+
+  .thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+  }
+
+  .card-body {
+    padding: 0.35rem 0;
+  }
+
+  .card-title {
+    -webkit-line-clamp: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .card-summary,
+  .badge-row,
+  .pane-sub,
+  .pane-hint {
+    display: none;
+  }
+
+  .favorite {
+    position: static;
+  }
+
+  .search-field {
+    flex: 0 0 auto;
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .search-field:focus-within {
+    flex: 1 1 auto;
+    width: auto;
+    padding: 0 0.5rem;
+    justify-content: flex-start;
+  }
+
+  .search-field .search-input {
+    width: 0;
+    padding: 0;
+  }
+
+  .search-field:focus-within .search-input {
+    width: auto;
+  }
+
+  .carousel-item {
+    width: min(100%, 180px);
+  }
+}
+
+
+/* ── the 480x320 Totem panel ─────────────────────────────────────────────
+   One screen at a time: the list pages two cards, the detail walks its
+   sections, and nothing scrolls. Pager state lives in views.ts. */
+@media (max-height: 400px) {
+  .pane { overflow: hidden; }
+  .pane-hint, .pane-sub { display: none; }
+  .card-summary { display: none; }
+  .thumb { height: 84px; min-height: 0; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  .carousel { overflow: hidden; }
+  .md-code { overflow: hidden; }
+  .filter-panel { display: none; }
+
+  .panel-pager {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 64px 6px 0;
+  }
+  .panel-pager .pager-step {
+    width: 64px; min-height: 44px; font-size: 18px;
+    border: 1px solid var(--pm-border); border-radius: 8px;
+    background: var(--pm-surface); color: inherit; cursor: pointer;
+  }
+  .panel-pager .pager-step:disabled { opacity: 0.35; }
+  .panel-pager .pager-count {
+    flex: 1; text-align: center; color: var(--pm-muted);
+    font-size: 11px; letter-spacing: 0.1em;
+  }
+  .detail-screen { overflow: hidden; min-height: 0; flex: 1 1 auto; }
+  .detail-description { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6; overflow: hidden; }
+}

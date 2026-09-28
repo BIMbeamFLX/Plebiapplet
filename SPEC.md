@@ -56,8 +56,11 @@ known protocol/package gaps: no wallet/zap NAP; dm NAP not designed for kind-16/
 nappletType: plebeian-storefront
 purpose: watch-only storefront for Plebeian Market (NIP-99/gamma kind-30402 listings)
 NAPs used: outbox (req), storage (opt), resource (opt), common (opt), count (opt),
-           link (opt), theme (opt), identity (opt)
-requires: ['outbox']              # the only hard requirement
+           link (opt), theme (opt); identity is only shown in the About pane,
+           never asked for, so it is not in requires
+requires: ['outbox', 'resource', 'link', 'storage', 'common', 'count', 'theme']
+                                  # every domain the code asks the shell for;
+                                  # outbox is the only hard requirement at runtime
 optional domains and fallbacks:
   resource -> render bundled placeholder tile instead of product images
   storage  -> favorites + UI prefs disabled, in-memory only for the session
@@ -204,14 +207,14 @@ Optional NAP-THEME, whole-surface per skill contract: map `theme.colors.backgrou
 ```bash
 napplet create plebiapplet-storefront && cd plebiapplet-storefront
 napplet init                      # d-tag: plebeian-storefront, title, description
-# implement per this spec: src/main.ts, src/styles.css, index.html title, vite.config.ts requires: ['outbox']
+# implement per this spec: src/main.ts, src/styles.css, index.html title, vite.config.ts requires: every domain the code asks for (§5)
 pnpm install
 pnpm verify                       # type-check + single-file build
 pnpm test:conformance             # napplet-conformance ./dist
 napplet paja -- pnpm vite --host 127.0.0.1   # runtime preview URL for the report
 ```
 
-Completion checklist (from build/test skills): no forbidden browser authority in the artifact; `requires` = `['outbox']` only; every optional domain gated with fallback; theme applied whole-surface incl. fallback background; tiny + large layouts verified without overflow; conformance passing; Paja preview URL reported (or Paja explicitly reported unavailable — never a raw Vite URL). Deploy (nsite/NIP-5A via CLI, needs signing key) is a separate later step.
+Completion checklist (from build/test skills): no forbidden browser authority in the artifact; `requires` lists every domain the code asks the shell for (`outbox` plus the optional ones, §5); every optional domain gated with fallback; theme applied whole-surface incl. fallback background; tiny + large layouts verified without overflow; conformance passing; Paja preview URL reported (or Paja explicitly reported unavailable — never a raw Vite URL). Deploy (nsite/NIP-5A via CLI, needs signing key) is a separate later step.
 
 ## 13. Sources
 
